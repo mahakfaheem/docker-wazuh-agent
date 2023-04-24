@@ -8,15 +8,16 @@ LABEL maintainer="medvedev.yp@gmail.com"
 LABEL version="4.3.10"
 LABEL description="Wazuh Docker Agent"
 ARG AGENT_VERSION="4.3.10-1"
-ENV JOIN_MANAGER_MASTER_HOST=""
-ENV JOIN_MANAGER_WORKER_HOST=""
+ENV JOIN_MANAGER_MASTER_HOST="UPDATE_YOUR_MANAGER_IP_HERE"
+ENV JOIN_MANAGER_WORKER_HOST="UPDATE_YOUR_WORKER_IP_HERE"
 ENV VIRUS_TOTAL_KEY=""
 ENV JOIN_MANAGER_PROTOCOL="https"
-ENV JOIN_MANAGER_USER = ""
-ENV JOIN_MANAGER_PASSWORD=""
+ENV JOIN_MANAGER_USER = "Wazuh_API_User('wazuh-wui' by default))"
+ENV JOIN_MANAGER_PASSWORD="Wazuh_API_Password"
 ENV JOIN_MANAGER_API_PORT="55000"
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+RUN apt-get update
 RUN install_packages \
   procps curl apt-transport-https gnupg2 inotify-tools python3-docker python3-setuptools python3-pip && \
   curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | apt-key add - && \
@@ -27,6 +28,7 @@ RUN install_packages \
   install_packages openjdk-8-jdk
 
 COPY *.py *.jinja2  /var/ossec/
+COPY authd.pass /var/ossec/etc/
 WORKDIR /var/ossec/
 COPY --from=builder /tmp/wheel /tmp/wheel
 RUN pip3 install --no-index /tmp/wheel/*.whl && \
@@ -38,5 +40,4 @@ RUN pip3 install --no-index /tmp/wheel/*.whl && \
   rm -rf  /tmp/* /var/tmp/* /var/log/* && \
   chown -R wazuh:wazuh /var/ossec/
 EXPOSE 5000
-USER wazuh
 ENTRYPOINT ["./register_agent.py"]

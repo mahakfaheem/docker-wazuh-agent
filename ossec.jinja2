@@ -1,7 +1,7 @@
 <ossec_config>
   <client>
     <server>
-      <address>{{ join_manager_hostname }}</address>
+      <address>{{ join_manager_worker_host }}</address>
       <port>{{ join_manager_port | default('1514', true) }}</port>
       <!--protocol>tcp</protocol-->
     </server>
@@ -10,20 +10,16 @@
     <time-reconnect>30</time-reconnect>
     <auto_restart>yes</auto_restart>
     <crypto_method>aes</crypto_method>
+    <enrollment>
+    <enabled>no</enabled>
+    <manager_address>{{ join_manager_master_host }}</manager_address>
+    <agent_name>test_agent</agent_name>
+    <groups>default</groups>
+    <server_ca_path>rootCA.pem</server_ca_path>
+    <authorization_pass_path>etc/authd.pass</authorization_pass_path>  
+    </enrollment>
   </client>
-  <auth>
-    <disabled>no</disabled>
-    <remote_enrollment>yes</remote_enrollment>
-    <port>{{ join_manager_port | default('1514', true) }}</port>
-    <use_source_ip>no</use_source_ip>
-    <force>
-        <enabled>yes</enabled>
-        <disconnected_time enabled="no">0</disconnected_time>
-        <after_registration_time>0</after_registration_time>
-        <key_mismatch>yes</key_mismatch>
-        <purge>yes</purge>
-    </force>
-  </auth>
+  
 
   <client_buffer>
     <!-- Agent buffer options -->
